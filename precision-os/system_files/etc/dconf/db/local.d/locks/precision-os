@@ -1,0 +1,6 @@
+/org/gnome/desktop/interface/gtk-theme
+/org/gnome/desktop/interface/icon-theme
+/org/gnome/desktop/interface/cursor-theme
+/org/gnome/desktop/interface/color-scheme
+/org/gnome/shell/extensions/user-theme/name
+/org/gnome/desktop/wm/preferences/button-layout

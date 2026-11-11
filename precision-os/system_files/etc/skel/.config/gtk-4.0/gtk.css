@@ -1,0 +1,16 @@
+/* PrecisionOS libadwaita palette (libadwaita only reads ~/.config/gtk-4.0/gtk.css) */
+@define-color accent_bg_color #D30000;
+@define-color accent_color #FF4A4A;
+@define-color accent_fg_color #FFFFFF;
+@define-color window_bg_color #1E1E1E;
+@define-color window_fg_color #EAEAEA;
+@define-color view_bg_color #161616;
+@define-color view_fg_color #EAEAEA;
+@define-color headerbar_bg_color #0D0D0D;
+@define-color headerbar_fg_color #EAEAEA;
+@define-color headerbar_backdrop_color #141414;
+@define-color sidebar_bg_color #141414;
+@define-color sidebar_fg_color #EAEAEA;
+@define-color card_bg_color #262626;
+@define-color popover_bg_color #1E1E1E;
+@define-color dialog_bg_color #1E1E1E;

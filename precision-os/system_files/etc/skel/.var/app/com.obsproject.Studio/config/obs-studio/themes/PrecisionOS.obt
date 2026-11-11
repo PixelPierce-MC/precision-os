@@ -1,0 +1,19 @@
+/* OBS 30+ theme format. If a variable below has no effect, compare against the Yami.obt shipped with your OBS. */
+@OBSThemeMeta {
+    name: 'PrecisionOS';
+    id: 'com.precisionos.dark';
+    extends: 'com.obsproject.Yami';
+    author: 'PrecisionOS';
+    dark: 'true';
+}
+@OBSThemeVars {
+    --primary: #D30000;
+    --primary_light: #FF3B3B;
+    --primary_lighter: #FF6A6A;
+    --primary_dark: #A80000;
+    --bg_window: #0D0D0D;
+    --bg_base: #141414;
+    --bg_preview: #0D0D0D;
+    --bg_in: #1E1E1E;
+    --bg_row: #1E1E1E;
+}

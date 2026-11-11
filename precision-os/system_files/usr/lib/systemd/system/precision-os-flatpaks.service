@@ -1,0 +1,13 @@
+[Unit]
+Description=Install PrecisionOS default Flatpaks (first boot)
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=!/var/lib/precision-os/flatpaks.done
+
+[Service]
+Type=oneshot
+ExecStart=/usr/libexec/precision-os/install-flatpaks
+TimeoutStartSec=30min
+
+[Install]
+WantedBy=multi-user.target

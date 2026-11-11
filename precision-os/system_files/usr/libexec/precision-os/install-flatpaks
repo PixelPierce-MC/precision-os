@@ -1,0 +1,16 @@
+#!/usr/bin/bash
+# Idempotent: installs the Flatpaks listed in /usr/share/precision-os/flatpaks.list (+ MangoHud Vulkan layer).
+# Used by precision-os-flatpaks.service (first boot) and `ujust precision-setup`.
+set -euo pipefail
+LIST=/usr/share/precision-os/flatpaks.list
+flatpak remote-add --if-not-exists --system flathub https://flathub.org/repo/flathub.flatpakrepo
+while read -r ref; do
+  [[ $ref == app/* ]] || continue
+  id=${ref#app/}; id=${id%%/*}
+  flatpak info --system "$id" &>/dev/null || flatpak install --system -y --noninteractive flathub "$id"
+done < "$LIST"
+for b in $(flatpak list --system --runtime --columns=application,branch | awk '$1=="org.freedesktop.Platform"{print $2}' | sort -u); do
+  flatpak install --system -y --noninteractive flathub "org.freedesktop.Platform.VulkanLayer.MangoHud//$b" || true
+done
+install -d /var/lib/precision-os
+touch /var/lib/precision-os/flatpaks.done
