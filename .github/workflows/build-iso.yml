@@ -1,32 +1,9 @@
-cat << 'EOF' > ~/PrecisionOS/.github/workflows/build-iso.yml
-name: Build PrecisionOS (image + ISOs)
+name: Build PrecisionOS
 
 on:
   workflow_dispatch:
-    inputs:
-      build_installer_iso:
-        description: "Installer ISO (Anaconda, Flatpaks baked in). Verified path."
-        type: boolean
-        default: true
-      build_live_iso:
-        description: "Live ISO (boots to a desktop, Mint-style). Experimental."
-        type: boolean
-        default: false
-      fedora_version:
-        description: "Override Fedora major version for the installer ISO (blank = auto-detect)"
-        type: string
-        default: ""
   push:
     branches: [main]
-    paths: ["Containerfile", "build_files/**", "system_files/**"]
-  schedule:
-    - cron: "30 4 * * 2"
-
-env:
-  IMAGE_NAME: precision-os
-  BASE_IMAGE: ghcr.io/ublue-os/bazzite-gnome-nvidia
-  BASE_TAG: latest
-  FLATPAK_LIST: system_files/usr/share/precision-os/flatpaks.list
 
 jobs:
   build-image:
@@ -35,8 +12,6 @@ jobs:
       contents: read
       packages: write
       id-token: write
-    outputs:
-      image_tag: ${{ steps.image_data.outputs.image_tag }}
     steps:
       - name: Free up disk space
         run: |
@@ -55,21 +30,20 @@ jobs:
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
           echo "image_tag=latest" >> "$GITHUB_OUTPUT"
 
-      - name: Build
+      - name: Build container image
         uses: redhat-actions/buildah-build@v2
         with:
           containerfiles: |
             Containerfile
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.image_data.outputs.image_tag }}
+          image: precision-os
+          tags: latest
           oci: true
 
       - name: Push to GHCR
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: ${{ env.IMAGE_NAME }}
-          tags: ${{ steps.image_data.outputs.image_tag }}
+          image: precision-os
+          tags: latest
           registry: ghcr.io/${{ steps.image_data.outputs.owner }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-EOF
