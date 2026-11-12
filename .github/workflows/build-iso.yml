@@ -31,7 +31,7 @@ jobs:
           echo "image_tag=stable" >> "$GITHUB_OUTPUT"
 
       - name: Build container image
-        uses: redhat-actions/buildah-build@v2
+        uses: redhat-actions/buildah-build@v3
         with:
           containerfiles: |
             Containerfile
@@ -40,7 +40,7 @@ jobs:
           oci: true
 
       - name: Push to GHCR
-        uses: redhat-actions/push-to-registry@v2
+        uses: redhat-actions/push-to-registry@v3
         with:
           image: precision-os
           tags: stable
