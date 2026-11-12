@@ -28,7 +28,7 @@ jobs:
         id: image_data
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> "$GITHUB_OUTPUT"
-          echo "image_tag=latest" >> "$GITHUB_OUTPUT"
+          echo "image_tag=stable" >> "$GITHUB_OUTPUT"
 
       - name: Build container image
         uses: redhat-actions/buildah-build@v2
@@ -36,14 +36,14 @@ jobs:
           containerfiles: |
             Containerfile
           image: precision-os
-          tags: latest
+          tags: stable
           oci: true
 
       - name: Push to GHCR
         uses: redhat-actions/push-to-registry@v2
         with:
           image: precision-os
-          tags: latest
+          tags: stable
           registry: ghcr.io/${{ steps.image_data.outputs.owner }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
