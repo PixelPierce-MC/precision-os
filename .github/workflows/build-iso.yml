@@ -1,3 +1,4 @@
+cat << 'EOF' > ~/PrecisionOS/.github/workflows/build-iso.yml
 name: Build PrecisionOS (image + ISOs)
 
 on:
@@ -19,7 +20,7 @@ on:
     branches: [main]
     paths: ["Containerfile", "build_files/**", "system_files/**"]
   schedule:
-    - cron: "30 4 * * 2"  # weekly image rebuild to follow Bazzite upstream (ISOs stay manual)
+    - cron: "30 4 * * 2"
 
 env:
   IMAGE_NAME: precision-os
@@ -71,3 +72,4 @@ jobs:
           registry: ghcr.io/${{ steps.image_data.outputs.owner }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+EOF
