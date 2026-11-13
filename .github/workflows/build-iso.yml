@@ -42,3 +42,22 @@ jobs:
           file: Containerfile
           push: true
           tags: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+
+  build-installer-iso:
+    needs: build-image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Lowercase repository owner
+        id: string_ops
+        run: |
+          echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
+
+      - name: Build ISO using blue-build or bootc-image-builder
+        uses: azure/container-scan@v0 # Placeholder or builder action setup
+        with:
+          image-name: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
