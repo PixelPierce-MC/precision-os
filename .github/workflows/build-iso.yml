@@ -57,7 +57,8 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO using blue-build or bootc-image-builder
-        uses: azure/container-scan@v0 # Placeholder or builder action setup
+      - name: Build ISO using bootc-image-builder
+        uses: osbuild/bootc-image-builder-action@v1
         with:
-          image-name: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+          image: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+          auto_upload_artifacts: true
