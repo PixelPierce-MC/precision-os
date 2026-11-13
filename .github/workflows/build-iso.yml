@@ -52,33 +52,22 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Lowercase repository owner
         id: string_ops
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO using bootc-image-builder
-        run: |
-          mkdir -p output
-          sudo docker run \
-            --rm \
-            --privileged \
-            -v /var/run/docker.sock:/var/run/docker.sock \
-            -v $(pwd)/output:/output \
-            -v /home/runner/.docker/config.json:/root/.docker/config.json:ro \
-            quay.io/centos-bootc/bootc-image-builder:latest \
-            --type iso \
-            ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+      - name: Build ISO using osbuild/image-builder-action
+        uses: osbuild/image-builder-action@main
+        with:
+          bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+          image_type: iso
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: output/*.iso
+          path: |
+            *.iso
+            output/*.iso
+            build/**/*.iso
