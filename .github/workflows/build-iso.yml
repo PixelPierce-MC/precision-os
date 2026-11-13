@@ -58,14 +58,13 @@ jobs:
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
       - name: Build ISO using osbuild/image-builder-action
-        uses: osbuild/image-builder-action@main
+        uses: osbuild/image-builder-action@v1
         with:
-          image: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
-          config-file: ./config.toml
-          additional-args: "--type iso"
+          bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+          image_type: bootc-generic-iso
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: output/*.iso
+          path: build/store/export/*.iso
