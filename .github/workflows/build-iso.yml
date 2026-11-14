@@ -69,7 +69,7 @@ jobs:
         uses: osbuild/image-builder-action@main
         with:
           bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
-          image_type: iso
+          image_type: bootc-installer
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
