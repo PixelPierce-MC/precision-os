@@ -68,23 +68,8 @@ jobs:
 
       - name: Pull image and build ISO
         run: |
-          mkdir -p output bib-repos
+          mkdir -p output
           sudo podman pull ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
-
-          VERSION_ID=$(sudo podman run --rm ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable grep -oP '(?<=^VERSION_ID=).+' /etc/os-release | tr -d '"')
-          echo "Detected Fedora version: $VERSION_ID"
-
-          cat << JSON > bib-repos/fedora-${VERSION_ID}.json
-          {
-            "x86_64": [
-              {
-                "name": "fedora",
-                "baseurl": "https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/Everything/x86_64/os/",
-                "check_gpg": false
-              }
-            ]
-          }
-          JSON
 
           sudo podman run \
             --rm \
@@ -92,11 +77,10 @@ jobs:
             --pull=newer \
             --security-opt label=type:unconfined_t \
             -v "$(pwd)/output:/output" \
-            -v "$(pwd)/bib-repos/fedora-${VERSION_ID}.json:/usr/share/osbuild/repositories/fedora-${VERSION_ID}.json:ro" \
-            -v "$(pwd)/bib-repos/fedora-${VERSION_ID}.json:/etc/osbuild/repositories/fedora-${VERSION_ID}.json:ro" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             quay.io/centos-bootc/bootc-image-builder:latest \
             --type iso \
+            --distro fedora-rawhide \
             --rootfs btrfs \
             --use-librepo=True \
             ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
