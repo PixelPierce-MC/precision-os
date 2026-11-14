@@ -48,24 +48,34 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      packages: read
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Lowercase repository owner
         id: string_ops
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO using image-builder-action
-        uses: osbuild/image-builder-action@v0.5.0
+      - name: Build ISO using official image-builder-action
+        uses: osbuild/image-builder-action@main
         with:
-          image-type: iso
-          container-ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
-          export: iso
+          bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+          image_type: bootc-iso-installer
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: build/store/export/*.iso
+          path: |
+            *.iso
+            output/*.iso
+            build/**/*.iso
