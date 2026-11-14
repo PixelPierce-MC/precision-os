@@ -65,16 +65,15 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Pull image and build Installer ISO
+      - name: Build Installer ISO via bootc-image-builder
         run: |
           mkdir -p output
-          sudo docker pull ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
           sudo docker run \
             --rm \
             --privileged \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$(pwd)/output:/output" \
-            -v /var/lib/containers/storage:/var/lib/containers/storage \
+            -v ~/.docker/config.json:/root/.docker/config.json:ro \
             quay.io/centos-bootc/bootc-image-builder:latest \
             --type bootc-installer \
             ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
