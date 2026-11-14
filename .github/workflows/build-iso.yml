@@ -65,9 +65,10 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build Installer ISO via direct bootc-image-builder
+      - name: Pull image and build Installer ISO
         run: |
           mkdir -p output
+          sudo docker pull ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
           sudo docker run \
             --rm \
             --privileged \
