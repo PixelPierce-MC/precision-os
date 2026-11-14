@@ -66,7 +66,7 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Pull image and build ISO
+      - name: Pull image and build ISO via ublue-os/isogenerator
         run: |
           mkdir -p output
           sudo podman pull ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
@@ -78,13 +78,12 @@ jobs:
             --security-opt label=type:unconfined_t \
             -v "$(pwd)/output:/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
-            quay.io/centos-bootc/bootc-image-builder:latest \
+            ghcr.io/ublue-os/isogenerator:latest \
             --type iso \
-            --rootfs btrfs \
             ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: output/bootiso/*.iso
+          path: output/*.iso
