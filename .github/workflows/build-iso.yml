@@ -73,6 +73,7 @@ jobs:
             --privileged \
             -v /var/run/docker.sock:/var/run/docker.sock \
             -v "$(pwd)/output:/output" \
+            -v /var/lib/containers/storage:/var/lib/containers/storage \
             -v ~/.docker/config.json:/root/.docker/config.json:ro \
             quay.io/centos-bootc/bootc-image-builder:latest \
             --type bootc-installer \
