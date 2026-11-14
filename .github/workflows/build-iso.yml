@@ -70,6 +70,7 @@ jobs:
         with:
           bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
           image_type: bootc-installer
+          bootc_installer_payload_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
