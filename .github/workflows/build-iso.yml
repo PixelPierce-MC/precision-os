@@ -65,18 +65,21 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO using official image-builder-action
-        uses: osbuild/image-builder-action@main
-        with:
-          bootc_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
-          image_type: bootc-installer
-          bootc_installer_payload_ref: ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
+      - name: Build Installer ISO via direct bootc-image-builder
+        run: |
+          mkdir -p output
+          sudo docker run \
+            --rm \
+            --privileged \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$(pwd)/output:/output" \
+            -v /var/lib/containers/storage:/var/lib/containers/storage \
+            quay.io/centos-bootc/bootc-image-builder:latest \
+            --type bootc-installer \
+            ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: |
-            *.iso
-            output/*.iso
-            build/**/*.iso
+          path: output/*.iso
