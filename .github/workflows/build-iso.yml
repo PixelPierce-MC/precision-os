@@ -66,22 +66,20 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Build ISO via ublue-os/isogenerator
+      - name: Generate Installer ISO with BlueBuild CLI
         run: |
           mkdir -p output
           sudo podman run \
             --rm \
             --privileged \
             --pull=newer \
-            --security-opt label=type:unconfined_t \
-            -e IMAGE_REPO="ghcr.io/${{ steps.string_ops.outputs.owner }}" \
-            -e IMAGE_NAME="precision-os" \
-            -e IMAGE_TAG="stable" \
-            -e VERSION="41" \
-            -e ISO_NAME="precision-os-installer.iso" \
-            -v "$(pwd)/output:/isogenerator/output" \
+            -v "$(pwd)/output:/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
-            ghcr.io/ublue-os/isogenerator:latest
+            ghcr.io/blue-build/cli:latest-installer \
+            generate-iso \
+            --iso-name precision-os.iso \
+            --output-dir /output \
+            image ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
