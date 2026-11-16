@@ -47,7 +47,7 @@ jobs:
     needs: build-image
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       packages: read
     steps:
       - name: Free up disk space
@@ -74,6 +74,7 @@ jobs:
             --privileged \
             --pull=newer \
             -v "$(pwd)/output:/build-container-installer/build" \
+            -v "$(pwd)/output:/build" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
             IMAGE_REPO="ghcr.io/${{ steps.string_ops.outputs.owner }}" \
@@ -81,9 +82,13 @@ jobs:
             IMAGE_TAG="stable" \
             VARIANT="Kinoite" \
             ISO_NAME="precision-os.iso"
+          sudo chown -R $USER:$USER output
+          ls -lh output/
 
-      - name: Upload ISO Artifact
-        uses: actions/upload-artifact@v4
+      - name: Publish ISO to GitHub Releases
+        uses: softprops/action-gh-release@v2
         with:
-          name: precision-os-iso
-          path: output/*.iso
+          tag_name: latest-iso
+          name: PrecisionOS Latest ISO
+          prerelease: true
+          files: output/*.iso
