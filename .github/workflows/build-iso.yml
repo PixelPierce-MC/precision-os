@@ -76,7 +76,7 @@ jobs:
             -v "$(pwd)/output:/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             ghcr.io/blue-build/cli:latest \
-            generate-iso \
+            bluebuild generate-iso \
             --iso-name precision-os.iso \
             --output-dir /output \
             image ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
