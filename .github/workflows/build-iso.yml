@@ -73,8 +73,7 @@ jobs:
             --rm \
             --privileged \
             --pull=newer \
-            -v "$(pwd)/output:/build-container-installer/build" \
-            -v "$(pwd)/output:/build" \
+            -v "$(pwd)/output:/build-container-installer/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
             IMAGE_REPO="ghcr.io/${{ steps.string_ops.outputs.owner }}" \
@@ -91,4 +90,6 @@ jobs:
           tag_name: latest-iso
           name: PrecisionOS Latest ISO
           prerelease: true
-          files: output/*.iso
+          files: |
+            output/precision-os.iso
+            output/precision-os.iso-CHECKSUM
