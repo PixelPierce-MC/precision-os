@@ -68,12 +68,12 @@ jobs:
 
       - name: Build Installer ISO with build-container-installer
         run: |
-          mkdir -p output
+          mkdir -p output release-files
+          sudo podman rm -f iso-builder || true
           sudo podman run \
-            --rm \
+            --name iso-builder \
             --privileged \
             --pull=newer \
-            -v "$(pwd)/output:/build-container-installer/output" \
             -v /var/lib/containers/storage:/var/lib/containers/storage \
             ghcr.io/jasonn3/build-container-installer:v1.5.0 \
             IMAGE_REPO="ghcr.io/${{ steps.string_ops.outputs.owner }}" \
@@ -81,15 +81,31 @@ jobs:
             IMAGE_TAG="stable" \
             VARIANT="Kinoite" \
             ISO_NAME="precision-os.iso"
+
+          # Copy the generated ISO and checksum directly from the container's working directory
+          sudo podman cp iso-builder:/build-container-installer/precision-os.iso output/precision-os.iso
+          sudo podman cp iso-builder:/build-container-installer/precision-os.iso-CHECKSUM output/precision-os.iso-CHECKSUM || true
+          sudo podman rm -f iso-builder
+
           sudo chown -R $USER:$USER output
           ls -lh output/
 
-      - name: Publish ISO to GitHub Releases
+          # Split into < 2GB chunks for GitHub Releases (GitHub has a 2GB per-asset limit)
+          split -b 1900M -d output/precision-os.iso release-files/precision-os.iso.part
+          cp output/precision-os.iso-CHECKSUM release-files/ || true
+          ls -lh release-files/
+
+      - name: Upload Full ISO Artifact (Single File)
+        uses: actions/upload-artifact@v4
+        with:
+          name: precision-os-iso
+          path: output/precision-os.iso
+          retention-days: 7
+
+      - name: Publish Split ISO to GitHub Releases
         uses: softprops/action-gh-release@v2
         with:
           tag_name: latest-iso
           name: PrecisionOS Latest ISO
           prerelease: true
-          files: |
-            output/precision-os.iso
-            output/precision-os.iso-CHECKSUM
+          files: release-files/*
