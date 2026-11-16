@@ -66,16 +66,23 @@ jobs:
         run: |
           echo "owner=${GITHUB_REPOSITORY_OWNER,,}" >> $GITHUB_OUTPUT
 
-      - name: Generate Installer ISO
-        uses: blue-build/github-action/generate-iso@v1
-        with:
-          image_name: precision-os
-          image_tag: stable
-          registry: ghcr.io/${{ steps.string_ops.outputs.owner }}
-          iso_name: precision-os.iso
+      - name: Generate Installer ISO with BlueBuild CLI
+        run: |
+          mkdir -p output
+          sudo podman run \
+            --rm \
+            --privileged \
+            --pull=newer \
+            -v "$(pwd)/output:/output" \
+            -v /var/lib/containers/storage:/var/lib/containers/storage \
+            ghcr.io/blue-build/cli:latest \
+            generate-iso \
+            --iso-name precision-os.iso \
+            --output-dir /output \
+            image ghcr.io/${{ steps.string_ops.outputs.owner }}/precision-os:stable
 
       - name: Upload ISO Artifact
         uses: actions/upload-artifact@v4
         with:
           name: precision-os-iso
-          path: "*.iso"
+          path: output/*.iso
